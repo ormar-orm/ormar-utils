@@ -97,7 +97,19 @@ pub fn encode_json(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<PyObjec
     let json_mod = py
         .import_bound("orjson")
         .or_else(|_| py.import_bound("json"))?;
-    let dumped = json_mod.call_method1("dumps", (val_bound,))?;
+
+    // Check if using orjson (which is always compact) or standard json
+    let is_orjson = json_mod.getattr("__name__")?.extract::<String>()? == "orjson";
+
+    let dumped = if is_orjson {
+        // orjson is always compact, no need for separators parameter
+        json_mod.call_method1("dumps", (val_bound,))?
+    } else {
+        // Standard json: use separators to match orjson's compact format
+        let kwargs = PyDict::new_bound(py);
+        kwargs.set_item("separators", (",", ":"))?;
+        json_mod.call_method("dumps", (val_bound,), Some(&kwargs))?
+    };
 
     // orjson returns bytes, json returns str
     if dumped.is_instance_of::<PyBytes>() {
