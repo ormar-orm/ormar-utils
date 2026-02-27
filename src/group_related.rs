@@ -44,8 +44,8 @@ fn group_related_inner(py: Python<'_>, list_: &[String]) -> PyResult<PyObject> {
             let nested = group_related_inner(py, &children)?;
             result_items.push((key, nested));
         } else {
-            let py_list = PyList::new_bound(py, &children);
-            result_items.push((key, py_list.into()));
+            let py_list = PyList::new(py, &children)?;
+            result_items.push((key, py_list.unbind().into()));
         }
     }
 
@@ -56,10 +56,10 @@ fn group_related_inner(py: Python<'_>, list_: &[String]) -> PyResult<PyObject> {
         a_len.cmp(&b_len).then_with(|| a.0.cmp(&b.0))
     });
 
-    let dict = PyDict::new_bound(py);
+    let dict = PyDict::new(py);
     for (key, value) in &result_items {
         dict.set_item(key, value)?;
     }
 
-    Ok(dict.into())
+    Ok(dict.unbind().into())
 }

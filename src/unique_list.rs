@@ -35,8 +35,8 @@ impl UniqueList {
     }
 
     fn to_list(&self, py: Python<'_>) -> PyResult<PyObject> {
-        let list = PyList::new_bound(py, self.items.iter().map(|x| x.bind(py)));
-        Ok(list.into())
+        let list = PyList::new(py, self.items.iter().map(|x| x.bind(py)))?;
+        Ok(list.unbind().into())
     }
 
     fn __len__(&self) -> usize {

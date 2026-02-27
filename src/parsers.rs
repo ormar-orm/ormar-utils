@@ -1,7 +1,7 @@
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use base64::Engine;
 use pyo3::prelude::*;
-use pyo3::types::{PyBytes, PyString};
+use pyo3::types::{PyBytes, PyString, PyDict};
 
 /// Encode bytes to string representation.
 /// If represent_as_string is true, uses base64 encoding.
@@ -21,11 +21,11 @@ pub fn encode_bytes(
 
     if represent_as_string {
         let encoded = BASE64_STANDARD.encode(bytes_val);
-        Ok(PyString::new_bound(py, &encoded).into())
+        Ok(PyString::new(py, &encoded).into())
     } else {
         let s = std::str::from_utf8(bytes_val)
             .map_err(|e| pyo3::exceptions::PyUnicodeDecodeError::new_err(e.to_string()))?;
-        Ok(PyString::new_bound(py, s).into())
+        Ok(PyString::new(py, s).into())
     }
 }
 
@@ -49,9 +49,9 @@ pub fn decode_bytes(
         let decoded = BASE64_STANDARD
             .decode(s)
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
-        Ok(PyBytes::new_bound(py, &decoded).into())
+        Ok(PyBytes::new(py, &decoded).into())
     } else {
-        Ok(PyBytes::new_bound(py, s.as_bytes()).into())
+        Ok(PyBytes::new(py, s.as_bytes()).into())
     }
 }
 
@@ -59,7 +59,7 @@ pub fn decode_bytes(
 /// Handles datetime objects by calling .isoformat() first.
 #[pyfunction]
 pub fn encode_json(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<PyObject> {
-    let datetime_mod = py.import_bound("datetime")?;
+    let datetime_mod = py.import("datetime")?;
     let date_type = datetime_mod.getattr("date")?;
     let datetime_type = datetime_mod.getattr("datetime")?;
     let time_type = datetime_mod.getattr("time")?;
@@ -84,7 +84,7 @@ pub fn encode_json(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<PyObjec
             Ok(parsed) => {
                 let result = serde_json::to_string(&parsed)
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
-                return Ok(PyString::new_bound(py, &result).into());
+                return Ok(PyString::new(py, &result).into());
             }
             Err(_) => {
                 // Not valid JSON, return as-is
@@ -95,8 +95,8 @@ pub fn encode_json(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<PyObjec
 
     // For other types, use Python's json.dumps
     let json_mod = py
-        .import_bound("orjson")
-        .or_else(|_| py.import_bound("json"))?;
+        .import("orjson")
+        .or_else(|_| py.import("json"))?;
 
     // Check if using orjson (which is always compact) or standard json
     let is_orjson = json_mod.getattr("__name__")?.extract::<String>()? == "orjson";
@@ -106,7 +106,7 @@ pub fn encode_json(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<PyObjec
         json_mod.call_method1("dumps", (val_bound,))?
     } else {
         // Standard json: use separators to match orjson's compact format
-        let kwargs = PyDict::new_bound(py);
+        let kwargs = PyDict::new(py);
         kwargs.set_item("separators", (",", ":"))?;
         json_mod.call_method("dumps", (val_bound,), Some(&kwargs))?
     };
@@ -116,7 +116,7 @@ pub fn encode_json(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<PyObjec
         let bytes_val: &[u8] = dumped.downcast::<PyBytes>()?.as_bytes();
         let s = std::str::from_utf8(bytes_val)
             .map_err(|e| pyo3::exceptions::PyUnicodeDecodeError::new_err(e.to_string()))?;
-        Ok(PyString::new_bound(py, s).into())
+        Ok(PyString::new(py, s).into())
     } else {
         Ok(dumped.unbind())
     }

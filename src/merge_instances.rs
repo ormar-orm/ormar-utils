@@ -13,11 +13,11 @@ pub fn group_by_pk(py: Python<'_>, pks: Vec<PyObject>) -> PyResult<PyObject> {
         groups.entry(hash).or_default().push(idx);
     }
 
-    let result = PyList::empty_bound(py);
+    let result = PyList::empty(py);
     for (_hash, indices) in &groups {
-        let py_indices = PyList::new_bound(py, indices);
-        result.append(py_indices)?;
+        let py_indices = PyList::new(py, indices)?;
+        result.append(&py_indices)?;
     }
 
-    Ok(result.into())
+    Ok(result.unbind().into())
 }

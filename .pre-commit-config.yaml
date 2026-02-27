@@ -1,0 +1,29 @@
+repos:
+  - repo: https://github.com/rust-lang/rust-clippy
+    rev: v1.77.0
+    hooks:
+      - id: clippy
+        name: clippy
+        entry: cargo clippy -- -D warnings
+        language: system
+        types: [rust]
+        pass_filenames: false
+        stages: [commit]
+
+  - repo: local
+    hooks:
+      - id: cargo-fmt
+        name: cargo fmt
+        entry: cargo fmt
+        language: system
+        types: [rust]
+        pass_filenames: false
+        stages: [commit]
+
+      - id: cargo-check
+        name: cargo check
+        entry: cargo check
+        language: system
+        types: [rust]
+        pass_filenames: false
+        stages: [commit]

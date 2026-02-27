@@ -14,7 +14,7 @@ pub fn translate_list_to_dict(
 
     let is_ellipsis = default_obj.bind(py).is(&ellipsis);
 
-    let new_dict = PyDict::new_bound(py);
+    let new_dict = PyDict::new(py);
 
     for path in &list_to_trans {
         let parts: Vec<&str> = path.split("__").collect();
@@ -23,7 +23,7 @@ pub fn translate_list_to_dict(
         let def_val = if is_ellipsis {
             default_obj.clone_ref(py)
         } else {
-            let copy_mod = py.import_bound("copy")?;
+            let copy_mod = py.import("copy")?;
             copy_mod
                 .call_method1("deepcopy", (&default_obj,))?
                 .unbind()
@@ -37,7 +37,7 @@ pub fn translate_list_to_dict(
             if has_key {
                 let existing = current_level.get_item(*part)?.unwrap();
                 if !is_last && existing.downcast::<PyDict>().is_err() {
-                    let empty = PyDict::new_bound(py);
+                    let empty = PyDict::new(py);
                     current_level.set_item(*part, &empty)?;
                     current_level = empty;
                 } else if is_last {
@@ -49,7 +49,7 @@ pub fn translate_list_to_dict(
                 current_level.set_item(*part, &def_val)?;
                 break;
             } else {
-                let empty = PyDict::new_bound(py);
+                let empty = PyDict::new(py);
                 current_level.set_item(*part, &empty)?;
                 current_level = empty;
             }

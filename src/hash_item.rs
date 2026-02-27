@@ -45,11 +45,11 @@ fn hash_item_inner(py: Python<'_>, item: &Bound<'_, PyAny>) -> PyResult<PyObject
                 } else {
                     value.clone_ref(py)
                 };
-            let pair = PyTuple::new_bound(py, &[key.clone_ref(py), processed_value]);
-            result.push(pair.into());
+            let pair = PyTuple::new(py, &[key.clone_ref(py), processed_value])?;
+            result.push(pair.unbind().into());
         }
-        let tuple = PyTuple::new_bound(py, &result);
-        Ok(tuple.into())
+        let tuple = PyTuple::new(py, &result)?;
+        Ok(tuple.unbind().into())
     } else if let Ok(list) = item.downcast::<PyList>() {
         let mut result: Vec<PyObject> = Vec::with_capacity(list.len());
         for (idx, value) in list.iter().enumerate() {
@@ -59,12 +59,12 @@ fn hash_item_inner(py: Python<'_>, item: &Bound<'_, PyAny>) -> PyResult<PyObject
                 } else {
                     value.unbind()
                 };
-            let idx_obj = idx.to_object(py);
-            let pair = PyTuple::new_bound(py, &[idx_obj, processed_value]);
-            result.push(pair.into());
+            let idx_obj: PyObject = idx.into_pyobject(py)?.into_any().unbind();
+            let pair = PyTuple::new(py, &[idx_obj, processed_value])?;
+            result.push(pair.unbind().into());
         }
-        let tuple = PyTuple::new_bound(py, &result);
-        Ok(tuple.into())
+        let tuple = PyTuple::new(py, &result)?;
+        Ok(tuple.unbind().into())
     } else {
         Err(pyo3::exceptions::PyTypeError::new_err(
             "hash_item expects a dict or list",

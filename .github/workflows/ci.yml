@@ -11,7 +11,19 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Run lint checks
+        run: make check
+
   test:
+    needs: lint
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -40,9 +52,9 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Build with maturin
-        run: poetry run maturin develop
+        run: make build
       - name: Run tests
-        run: poetry run pytest tests/ -v
+        run: make test
 
   build:
     name: Build wheels

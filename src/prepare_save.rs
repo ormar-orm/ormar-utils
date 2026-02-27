@@ -10,7 +10,7 @@ pub fn prepare_model_to_save(
     aliases_map: HashMap<String, String>,
     fields_to_keep: HashSet<String>,
 ) -> PyResult<PyObject> {
-    let result = PyDict::new_bound(py);
+    let result = PyDict::new(py);
 
     for (key, value) in new_kwargs.iter() {
         let key_str: String = key.extract()?;
