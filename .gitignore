@@ -1,0 +1,23 @@
+# Rust
+/target/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+*.pyd
+dist/
+*.egg-info/
+.eggs/
+*.whl
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Environment
+.env
+.venv/
+venv/
