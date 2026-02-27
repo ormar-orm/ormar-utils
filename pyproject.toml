@@ -38,6 +38,7 @@ name = "ormar-utils"
 version = "0.1.0"
 description = "Rust-accelerated utility functions for the ormar ORM"
 authors = ["Radosław Drążkiewicz <collerek@gmail.com>"]
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
