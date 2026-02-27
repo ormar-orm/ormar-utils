@@ -33,5 +33,18 @@ Repository = "https://github.com/collerek/ormar-utils"
 [tool.maturin]
 features = ["pyo3/extension-module"]
 
+[tool.poetry]
+name = "ormar-utils"
+version = "0.1.0"
+description = "Rust-accelerated utility functions for the ormar ORM"
+authors = ["Radosław Drążkiewicz <collerek@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0"
+maturin = "^1.0"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

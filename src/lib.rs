@@ -13,22 +13,15 @@ use pyo3::prelude::*;
 /// Rust-accelerated utility functions for ormar ORM.
 #[pymodule]
 fn ormar_rust_utils(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    // Phase 1: Pure data, no Model dependency
     m.add_function(wrap_pyfunction!(parsers::encode_bytes, m)?)?;
     m.add_function(wrap_pyfunction!(parsers::decode_bytes, m)?)?;
     m.add_function(wrap_pyfunction!(parsers::encode_json, m)?)?;
     m.add_function(wrap_pyfunction!(hash_item::hash_item, m)?)?;
     m.add_function(wrap_pyfunction!(translate_list::translate_list_to_dict, m)?)?;
     m.add_function(wrap_pyfunction!(group_related::group_related_list, m)?)?;
-
-    // Phase 2: Collection utilities
     m.add_class::<unique_list::UniqueList>()?;
-
-    // Phase 3: Row processing
     m.add_function(wrap_pyfunction!(extract_columns::extract_prefixed_columns, m)?)?;
     m.add_function(wrap_pyfunction!(prepare_save::prepare_model_to_save, m)?)?;
-
-    // Phase 4: Merge infrastructure
     m.add_function(wrap_pyfunction!(merge_instances::group_by_pk, m)?)?;
     m.add_function(wrap_pyfunction!(merge_items::plan_merge_items_lists, m)?)?;
     Ok(())
