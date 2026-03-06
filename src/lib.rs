@@ -1,3 +1,4 @@
+mod alias_utils;
 mod extract_columns;
 mod group_related;
 mod hash_item;
@@ -24,5 +25,8 @@ fn ormar_rust_utils(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(prepare_save::prepare_model_to_save, m)?)?;
     m.add_function(wrap_pyfunction!(merge_instances::group_by_pk, m)?)?;
     m.add_function(wrap_pyfunction!(merge_items::plan_merge_items_lists, m)?)?;
+    m.add_function(wrap_pyfunction!(alias_utils::build_reverse_alias_map, m)?)?;
+    m.add_function(wrap_pyfunction!(alias_utils::translate_columns_to_aliases, m)?)?;
+    m.add_function(wrap_pyfunction!(alias_utils::translate_aliases_to_columns, m)?)?;
     Ok(())
 }
