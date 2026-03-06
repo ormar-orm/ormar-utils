@@ -237,3 +237,82 @@ def test_plan_merge_items_lists_empty():
     """Test merge plan with empty lists."""
     plan = ormar_rust_utils.plan_merge_items_lists([], [])
     assert plan == []
+
+
+def test_build_reverse_alias_map_basic():
+    """Test building reverse alias map with aliases."""
+    field_alias_map = {"name": "user_name", "age": "user_age"}
+    result = ormar_rust_utils.build_reverse_alias_map(field_alias_map)
+    # alias -> field_name
+    assert result["user_name"] == "name"
+    assert result["user_age"] == "age"
+    # identity entries for field names
+    assert result["name"] == "name"
+    assert result["age"] == "age"
+
+
+def test_build_reverse_alias_map_identity():
+    """Test reverse alias map when alias equals field name."""
+    field_alias_map = {"name": "name", "age": "age"}
+    result = ormar_rust_utils.build_reverse_alias_map(field_alias_map)
+    assert result["name"] == "name"
+    assert result["age"] == "age"
+    assert len(result) == 2
+
+
+def test_build_reverse_alias_map_empty():
+    """Test reverse alias map with empty input."""
+    result = ormar_rust_utils.build_reverse_alias_map({})
+    assert len(result) == 0
+
+
+def test_translate_columns_to_aliases_basic():
+    """Test translating field names to aliases."""
+    new_kwargs = {"name": "Alice", "age": 30}
+    field_to_alias = {"name": "user_name", "age": "user_age"}
+    result = ormar_rust_utils.translate_columns_to_aliases(new_kwargs, field_to_alias)
+    assert result["user_name"] == "Alice"
+    assert result["user_age"] == 30
+    assert "name" not in result
+    assert "age" not in result
+
+
+def test_translate_columns_to_aliases_missing_alias():
+    """Test that keys without an alias mapping are kept as-is."""
+    new_kwargs = {"name": "Alice", "extra": "value"}
+    field_to_alias = {"name": "user_name"}
+    result = ormar_rust_utils.translate_columns_to_aliases(new_kwargs, field_to_alias)
+    assert result["user_name"] == "Alice"
+    assert result["extra"] == "value"
+
+
+def test_translate_columns_to_aliases_empty():
+    """Test translating with empty inputs."""
+    result = ormar_rust_utils.translate_columns_to_aliases({}, {})
+    assert len(result) == 0
+
+
+def test_translate_aliases_to_columns_basic():
+    """Test translating aliases back to field names."""
+    new_kwargs = {"user_name": "Alice", "user_age": 30}
+    alias_to_field = {"user_name": "name", "user_age": "age"}
+    result = ormar_rust_utils.translate_aliases_to_columns(new_kwargs, alias_to_field)
+    assert result["name"] == "Alice"
+    assert result["age"] == 30
+    assert "user_name" not in result
+    assert "user_age" not in result
+
+
+def test_translate_aliases_to_columns_missing_mapping():
+    """Test that keys without a mapping are kept as-is."""
+    new_kwargs = {"user_name": "Alice", "extra": "value"}
+    alias_to_field = {"user_name": "name"}
+    result = ormar_rust_utils.translate_aliases_to_columns(new_kwargs, alias_to_field)
+    assert result["name"] == "Alice"
+    assert result["extra"] == "value"
+
+
+def test_translate_aliases_to_columns_empty():
+    """Test translating with empty inputs."""
+    result = ormar_rust_utils.translate_aliases_to_columns({}, {})
+    assert len(result) == 0
