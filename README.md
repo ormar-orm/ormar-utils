@@ -1,6 +1,6 @@
 # ormar-utils
 
-Rust-accelerated utility functions for the [ormar](https://github.com/collerek/ormar) async ORM.
+Rust-accelerated utility functions for the [ormar](https://github.com/ormar-orm/ormar) async ORM.
 
 This package provides optional Rust implementations of performance-critical operations used internally by ormar. When installed, ormar automatically uses these faster implementations.
 
@@ -21,6 +21,10 @@ pip install ormar[rust]
 - Python >= 3.10
 - A Rust toolchain (for building from source)
 
+Wheels are built against the CPython stable ABI (`abi3`, Python 3.10+), so a
+single wheel per platform works on current and future Python releases without a
+per-version rebuild.
+
 ## API Reference
 
 All functions are exposed from the `ormar_rust_utils` module:
@@ -40,9 +44,8 @@ All functions are exposed from the `ormar_rust_utils` module:
 ### Collections
 - `UniqueList(initial=None)` - A list that prevents duplicates using hash-based O(1) lookups
 
-### Row Processing
-- `extract_prefixed_columns(column_mappings, selected_columns, row, column_prefix, item)` - Extract prefixed columns from a database row
-- `prepare_model_to_save(new_kwargs, aliases_map, fields_to_keep)` - Consolidate column alias translation and field filtering
+### Alias Utilities
+- `build_reverse_alias_map(field_alias_map)` - Build a cached alias -> field_name lookup (with identity entries) from a field_name -> alias mapping
 
 ### Merge Infrastructure
 - `group_by_pk(pks)` - Group items by PK hash, preserving insertion order

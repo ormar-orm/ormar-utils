@@ -175,39 +175,6 @@ def test_unique_list_initial():
     assert len(ul) == 3
 
 
-def test_extract_prefixed_columns():
-    """Test extracting prefixed columns from a row-like dict."""
-
-    class FakeRow:
-        def __init__(self, data):
-            self._data = data
-
-        def __getitem__(self, key):
-            return self._data[key]
-
-    column_mappings = [("name", "name"), ("age", "age")]
-    selected_columns = {"name", "age"}
-    row = FakeRow({"pfx_name": "Alice", "pfx_age": 30})
-    item = {}
-    result = ormar_rust_utils.extract_prefixed_columns(
-        column_mappings, selected_columns, row, "pfx_", item
-    )
-    assert result["name"] == "Alice"
-    assert result["age"] == 30
-
-
-def test_prepare_model_to_save():
-    """Test preparing model dict for saving."""
-    new_kwargs = {"name": "Alice", "age": 30, "extra": "ignored"}
-    aliases_map = {"name": "user_name"}
-    fields_to_keep = {"name", "age"}
-    result = ormar_rust_utils.prepare_model_to_save(
-        new_kwargs, aliases_map, fields_to_keep
-    )
-    assert result == {"user_name": "Alice", "age": 30}
-    assert "extra" not in result
-
-
 def test_group_by_pk():
     """Test grouping by primary key."""
     pks = [1, 2, 1, 3, 2]
@@ -263,56 +230,4 @@ def test_build_reverse_alias_map_identity():
 def test_build_reverse_alias_map_empty():
     """Test reverse alias map with empty input."""
     result = ormar_rust_utils.build_reverse_alias_map({})
-    assert len(result) == 0
-
-
-def test_translate_columns_to_aliases_basic():
-    """Test translating field names to aliases."""
-    new_kwargs = {"name": "Alice", "age": 30}
-    field_to_alias = {"name": "user_name", "age": "user_age"}
-    result = ormar_rust_utils.translate_columns_to_aliases(new_kwargs, field_to_alias)
-    assert result["user_name"] == "Alice"
-    assert result["user_age"] == 30
-    assert "name" not in result
-    assert "age" not in result
-
-
-def test_translate_columns_to_aliases_missing_alias():
-    """Test that keys without an alias mapping are kept as-is."""
-    new_kwargs = {"name": "Alice", "extra": "value"}
-    field_to_alias = {"name": "user_name"}
-    result = ormar_rust_utils.translate_columns_to_aliases(new_kwargs, field_to_alias)
-    assert result["user_name"] == "Alice"
-    assert result["extra"] == "value"
-
-
-def test_translate_columns_to_aliases_empty():
-    """Test translating with empty inputs."""
-    result = ormar_rust_utils.translate_columns_to_aliases({}, {})
-    assert len(result) == 0
-
-
-def test_translate_aliases_to_columns_basic():
-    """Test translating aliases back to field names."""
-    new_kwargs = {"user_name": "Alice", "user_age": 30}
-    alias_to_field = {"user_name": "name", "user_age": "age"}
-    result = ormar_rust_utils.translate_aliases_to_columns(new_kwargs, alias_to_field)
-    assert result["name"] == "Alice"
-    assert result["age"] == 30
-    assert "user_name" not in result
-    assert "user_age" not in result
-
-
-def test_translate_aliases_to_columns_missing_mapping():
-    """Test that keys without a mapping are kept as-is."""
-    new_kwargs = {"user_name": "Alice", "extra": "value"}
-    alias_to_field = {"user_name": "name"}
-    result = ormar_rust_utils.translate_aliases_to_columns(new_kwargs, alias_to_field)
-    assert result["name"] == "Alice"
-    assert result["extra"] == "value"
-
-
-def test_translate_aliases_to_columns_empty():
-    """Test translating with empty inputs."""
-    result = ormar_rust_utils.translate_aliases_to_columns({}, {})
     assert len(result) == 0

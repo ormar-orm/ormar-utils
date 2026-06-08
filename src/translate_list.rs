@@ -24,9 +24,7 @@ pub fn translate_list_to_dict(
             default_obj.clone_ref(py)
         } else {
             let copy_mod = py.import("copy")?;
-            copy_mod
-                .call_method1("deepcopy", (&default_obj,))?
-                .unbind()
+            copy_mod.call_method1("deepcopy", (&default_obj,))?.unbind()
         };
 
         for (ind, part) in parts.iter().enumerate() {

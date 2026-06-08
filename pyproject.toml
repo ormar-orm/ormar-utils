@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "ormar-utils"
-version = "0.1.1"
+version = "0.2.0"
 description = "Rust-accelerated utility functions for the ormar ORM"
 readme = "README.md"
 license = { text = "MIT" }
@@ -22,20 +22,22 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3 :: Only",
     "License :: OSI Approved :: MIT License",
     "Topic :: Database",
 ]
 
 [project.urls]
-Homepage = "https://github.com/collerek/ormar-utils"
-Repository = "https://github.com/collerek/ormar-utils"
+Homepage = "https://github.com/ormar-orm/ormar-utils"
+Repository = "https://github.com/ormar-orm/ormar-utils"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
 
 [tool.poetry]
 name = "ormar-utils"
-version = "0.1.1"
+version = "0.2.0"
 description = "Rust-accelerated utility functions for the ormar ORM"
 authors = ["Radosław Drążkiewicz <collerek@gmail.com>"]
 package-mode = false
@@ -47,6 +49,10 @@ python = "^3.10"
 pytest = "^7.0"
 maturin = "^1.0"
 pre-commit = "^3.0"
+ruff = "^0.15"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
