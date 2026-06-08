@@ -1,7 +1,7 @@
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use base64::Engine;
 use pyo3::prelude::*;
-use pyo3::types::{PyBytes, PyString, PyDict};
+use pyo3::types::{PyBytes, PyDict, PyString};
 
 /// Encode bytes to string representation.
 /// If represent_as_string is true, uses base64 encoding.
@@ -94,9 +94,7 @@ pub fn encode_json(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<PyObjec
     }
 
     // For other types, use Python's json.dumps
-    let json_mod = py
-        .import("orjson")
-        .or_else(|_| py.import("json"))?;
+    let json_mod = py.import("orjson").or_else(|_| py.import("json"))?;
 
     // Check if using orjson (which is always compact) or standard json
     let is_orjson = json_mod.getattr("__name__")?.extract::<String>()? == "orjson";
