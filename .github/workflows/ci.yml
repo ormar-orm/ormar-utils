@@ -167,5 +167,10 @@ jobs:
           pattern: wheels-*
           merge-multiple: true
           path: dist
+      # skip-existing keeps a re-run or a partially-completed upload from
+      # failing the whole job on files PyPI already has, since a release can
+      # otherwise only ever be published once.
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
